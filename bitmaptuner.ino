@@ -35,12 +35,17 @@ SOFTWARE.
 
 */
 
-#include <ESP_8_BIT_GFX.h>
-#include "speaker.h"
+/*this code creates a glitched display of a bitmap by setting the width 
+of the bitmap incorrectly, causing pixels from one line to appear on the next
+line. The user is then able to 'tune' in the image by turning a potentiometer
+whose analogread value is mapped to a variable representing the width of the 
+bitmap*/
 
-int x_DimensionValue = 300;
-int pauseTime = 5050;
-int starttime;
+#include <ESP_8_BIT_GFX.h>
+#include "testbitmap.h"
+
+int x_DimensionValue = 300; //sets the bitmap width wider than it should be
+
 
 // A list of 8-bit color values that work well in a cycle.
 uint8_t colorCycle[] = {
@@ -72,7 +77,7 @@ void setup() {
   // Initial setup of graphics library
   videoOut.begin();
   videoOut.setRotation(4);
-  starttime = millis();
+
 }
 
 void loop() {
@@ -85,9 +90,9 @@ videoOut.setRotation(4);
 
   // Clear screen
   videoOut.fillScreen(0);
-  int potVal = analogRead(13)+random(50);
+  int potVal = analogRead(13); //reads the value of the pot
 
-  x_DimensionValue = map(potVal, 0, 4095, 100, 300);
+  x_DimensionValue = map(potVal, 0, 4095, 100, 300); //maps the pot value to x dimensions
 
  
   videoOut.drawBitmap(23, 40,  epd_bitmap_glitchtest, x_DimensionValue, 150, 0xE0);
