@@ -101,12 +101,12 @@ Serial.println(potVal);
   // Clear screen
   videoOut.fillScreen(0);
  
-
+//if the potentiometer is turned to less than halfway, display the first animation
   if (potVal <= 2047){
   int potVal = analogRead(13); //reads the value of the pot
   x_Dimension1Value = map(potVal, 0, 2047, 225, 275); //maps the pot value to x dimensions
   rollSpeed1 = 6;
-
+//the following creates an animation by cycling through frames, each frame being layered bitmaps
 if (millis()-startTime < 200){
    videoOut.drawBitmap(-30, y_position1, epd_bitmap_Layer_1_green, x_Dimension1Value, 179, 0xF0);
    videoOut.drawBitmap(-30, y_position1, epd_bitmap_Layer_1_blue, x_Dimension1Value, 179, 0x3F);
@@ -217,7 +217,7 @@ if (millis()-startTime >= 2200){
    startTime = millis();
    }
 }
-
+//below makes the image roll/scroll vertically except within "in-tune" range
 if( x_Dimension1Value <=249 or x_Dimension1Value >= 256){
     y_position1 = y_position1+rollSpeed1;
     if (y_position1 >= 240){
@@ -230,7 +230,7 @@ if( x_Dimension1Value <=249 or x_Dimension1Value >= 256){
 
  
    }
-
+//if the potentiometer is turned to more than halfway, display the second animation
    if (potVal>=2048){
     int potVal = analogRead(13); //reads the value of the pot
     x_Dimension2Value = map(potVal, 2048, 4095, 275, 225); //maps the pot value to x dimensions
@@ -314,7 +314,7 @@ if (millis()-startTime >= 1800){
    startTime = millis();
    }
 }
-
+//below makes the image roll/scroll vertically except within "in-tune" range
     if( x_Dimension2Value <=249 or x_Dimension2Value >= 256){
     y_position2 = y_position2+rollSpeed2;
     if (y_position2 >= 240){
