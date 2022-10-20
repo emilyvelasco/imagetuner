@@ -35,6 +35,11 @@ SOFTWARE.
 #include <ESP_8_BIT_GFX.h>
 #include "cat_and_galactic_squid.h"
 #include "spiral.h"
+#include "metropolis.h"
+#include "mondo.h"
+#include "ape.h"
+int horizontalOffset;
+int secondaryOffset;
 
 ESP_8_BIT_composite videoOut(true /* = NTSC */);
 AnimatedGIF gif;
@@ -166,30 +171,26 @@ void setup() {
 
     gif_width = gif.getCanvasWidth();
     gif_height = gif.getCanvasHeight();
-    Serial.print("Successfully opened GIF data ");
-    Serial.print(gif_width);
-    Serial.print(" wide and ");
-    Serial.print(gif_height);
-    Serial.println(" high.");
+
 
     allocated = new uint8_t[gif_height*gif_width];
     if (NULL==allocated)
     {
-      Serial.println("Allocation failed: buffer line array");
+
       allocateSuccess = false;
     }
     if (allocateSuccess)
     {
       intermediateBuffer = allocated;
       allocated = NULL;
-      Serial.println("Successfully allocated intermediate buffer");
+
     }
   }
   else
   {
     gif_width = 0;
     gif_height = 0;
-    Serial.println("Failed to open GIF data");
+
   }
 
   verticalRoll = 0;
@@ -239,17 +240,64 @@ void copyIntermediateToFrame(int offset_h, int offset_v)
 
 void loop() {
   // Horizontal offset is directly mapped from potentiometer position on pin 13.
-  int horizontalOffset;
-  int secondaryOffset;
+
   int primaryOffset = analogRead(13);
   int potVal = analogRead(13);
-  if (primaryOffset<=2047){
-    secondaryOffset = (primaryOffset-1024);
-    horizontalOffset = map(secondaryOffset, 0, 1024, gif_width+25, gif_width-25);
+
+
+  if (primaryOffset<=818){
+    secondaryOffset = abs(primaryOffset-409);
+    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+12, gif_width-12);
+    Serial.println ("GIF zone 1");
+    Serial.print("potentiometer value = "); 
+    Serial.println (potVal);
+    Serial.print("mapped value = "); 
+    Serial.println (horizontalOffset);
+    Serial.println();
   }
-  if (primaryOffset>2047){
-    secondaryOffset = (primaryOffset-3072);
-    horizontalOffset = map(secondaryOffset, 1024, 0, gif_width+25, gif_width-25);
+
+  if (primaryOffset>818 && primaryOffset<=1638){
+    secondaryOffset = abs(primaryOffset-1228);
+    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+12, gif_width-12);
+    Serial.println ("GIF zone 2");
+    Serial.print("potentiometer value = "); 
+    Serial.println (potVal);
+    Serial.print("mapped value = "); 
+    Serial.println (horizontalOffset);
+    Serial.println();
+  }
+
+  if (primaryOffset>1638 && primaryOffset<=2458){
+    secondaryOffset = primaryOffset-2048;
+    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+12, gif_width-12);
+    Serial.println ("GIF zone 3");
+    Serial.print("potentiometer value = "); 
+    Serial.println (potVal);
+    Serial.print("mapped value = "); 
+    Serial.println (horizontalOffset);
+    Serial.println();
+  }
+
+  if (primaryOffset>2458 && primaryOffset<=3276){
+    secondaryOffset = primaryOffset-2662;
+    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+12, gif_width-12);
+    Serial.println ("GIF zone 4");
+    Serial.print("potentiometer value = "); 
+    Serial.println (potVal);
+    Serial.print("mapped value = "); 
+    Serial.println (horizontalOffset);
+    Serial.println();
+  }
+
+  if (primaryOffset>3276){
+    secondaryOffset =primaryOffset-3685;
+    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+12, gif_width-12);
+    Serial.println ("GIF zone 5");
+    Serial.print("potentiometer value = "); 
+    Serial.println (potVal);
+    Serial.print("mapped value = "); 
+    Serial.println (horizontalOffset);
+    Serial.println();
   }
 
   // Vertical roll effect is calculated based on horizontal offset
@@ -285,12 +333,24 @@ void loop() {
     if(!gif.playFrame(false, &millisFrame))
     {
 
-    if (potVal<= 2047){
+    if (potVal<= 818){
       gif.open((uint8_t *)cat_and_galactic_squid_gif, cat_and_galactic_squid_gif_len, GIFDraw);
     }
 
-    if (potVal> 2047){
+    if (potVal>818 && potVal<=1638) {
       gif.open((uint8_t *)spiral_gif, spiral_gif_len, GIFDraw);
+    }
+
+    if (potVal>1638 && potVal<=2457) {
+      gif.open((uint8_t *)ape_gif, ape_gif_len, GIFDraw);
+    }
+
+    if (potVal>2457 && potVal<=3276) {
+      gif.open((uint8_t *)metropolis_gif, metropolis_gif_len, GIFDraw);
+    }
+
+    if (potVal>3276) {
+      gif.open((uint8_t *)mondo_gif, mondo_gif_len, GIFDraw);
     }
       // No more frames, reset the loop to start again.
       gif.reset();
