@@ -368,7 +368,7 @@ void loop() {
   }
 
   // Vertical roll effect is calculated based on horizontal offset
-  if (horizontalOffset < gif_width-3 || horizontalOffset > gif_width+3)
+  if (horizontalOffset < gif_width-1 || horizontalOffset > gif_width+1)
   {
     // If horizontal offset is far from actual gif width, add a vertical roll
     verticalRoll += horizontalOffset-gif_width;
@@ -425,7 +425,7 @@ void loop() {
     }
 
     if (AveragepotVal>2457 && AveragepotVal<=2866) {
-      gif.open((uint8_t *)interview_gif, interview_gif_len, GIFDraw);
+      gif.open((uint8_t *)mondo_gif, mondo_gif_len, GIFDraw);
     }
 
     if (AveragepotVal>2866 && AveragepotVal<=3276) {
@@ -438,7 +438,7 @@ void loop() {
 
 
     if (AveragepotVal>3685) {
-      gif.open((uint8_t *)mondo_gif, mondo_gif_len, GIFDraw);
+      gif.open((uint8_t *)interview_gif, interview_gif_len, GIFDraw);
     }
       // No more frames, reset the loop to start again.
       gif.reset();
