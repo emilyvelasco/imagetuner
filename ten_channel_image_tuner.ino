@@ -279,7 +279,7 @@ void loop() {
     Serial.println();
   }
 
-  if (AveragepotVal>818 && AveragepotVal<=1228){
+  if (AveragepotVal>819 && AveragepotVal<=1228){
     secondaryOffset = abs(AveragepotVal-1228);
     horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
     Serial.println ("GIF zone 3");
