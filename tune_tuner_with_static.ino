@@ -46,7 +46,7 @@ SOFTWARE.
 #include "offair.h"
 #include "static.h"
 int secondaryOffset;
-
+int horizontalDistortion;
 
 
 ESP_8_BIT_composite videoOut(true /* = NTSC */);
@@ -261,151 +261,151 @@ void loop() {
 
 
 
-  if (potVal<=400){
-    secondaryOffset = abs(potVal-400);
-    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+  if (potVal<=319){
+    secondaryOffset = abs(potVal-319);
+    horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
     newPlaying = 1;
 
   }
 
-  if (potVal>400 && potVal<=410){
-    secondaryOffset = abs(potVal-410);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width+25, gif_width-25);
+  if (potVal>319 && potVal<=419){
+    secondaryOffset = abs(potVal-419);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 2;
     //STATIC CHANNEL
 
   }
 
-  if (potVal>410 && potVal<=811){
-    secondaryOffset = abs(potVal-811);
-    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+  if (potVal>419 && potVal<=739){
+    secondaryOffset = abs(potVal-739);
+    horizontalOffset = map(secondaryOffset, 320, 0, gif_width+25, gif_width-25);
     newPlaying = 3;
 
   }
 
-  if (potVal>811 && potVal<=821){
-    secondaryOffset = abs(potVal-821);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width+25, gif_width-25);
+  if (potVal>739 && potVal<=839){
+    secondaryOffset = abs(potVal-839);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 4;
     //STATIC CHANNEL
 
   }
 
-    if (potVal>821 && potVal<=1221){
-    secondaryOffset = abs(potVal-1221);
-    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
+    if (potVal>839 && potVal<=1158){
+    secondaryOffset = abs(potVal-1158);
+    horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
     newPlaying = 5;
     
 
   }
     
-    if (potVal>1221 && potVal<=1231){
-    secondaryOffset = abs(potVal-1232);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    if (potVal>1158 && potVal<=1258){
+    secondaryOffset = abs(potVal-1258);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 6;
     //STATIC CHANNEL
   }
 
-    if (potVal>1231 && potVal<=1632){
-    secondaryOffset = abs(potVal-1632);
-    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    if (potVal>1258 && potVal<=1578){
+    secondaryOffset = abs(potVal-1578);
+    horizontalOffset = map(secondaryOffset, 320, 0, gif_width+25, gif_width-25);
     newPlaying = 7;
 
 
   }
 
-    if (potVal>1632 && potVal<=1642){
-    secondaryOffset = abs(potVal-1642);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    if (potVal>1578 && potVal<=1678){
+    secondaryOffset = abs(potVal-1678);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 8;
     //STATIC CHANNEL
 
   }
 
-    if (potVal>1642 && potVal<=2042){
-    secondaryOffset = abs(potVal-2042);
-    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+    if (potVal>1678 && potVal<=1997){
+    secondaryOffset = abs(potVal-1997);
+    horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
     newPlaying = 9;
 
 
   }
 
-  if (potVal>2042 && potVal<=2052){
-    secondaryOffset = abs(potVal-2052);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+  if (potVal>1997 && potVal<=2097){
+    secondaryOffset = abs(potVal-2097);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 10;
     //STATIC CHANNEL
 
   }
 
   
-  if (potVal>2052 && potVal<=2453){
-    secondaryOffset = abs(potVal-2453);
-    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+  if (potVal>2097 && potVal<=2417){
+    secondaryOffset = abs(potVal-2417);
+    horizontalOffset = map(secondaryOffset, 320, 0, gif_width+25, gif_width-25);
     newPlaying = 11;
 
   }
 
 
-  if (potVal>2453 && potVal<=2463){
-    secondaryOffset = abs(potVal-2463);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+  if (potVal>2417 && potVal<=2517){
+    secondaryOffset = abs(potVal-2517);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 12;
     //STATIC CHANNEL
 
   }
 
-  if (potVal>2463 && potVal<=2863){
-    secondaryOffset = abs(potVal-2863);
-    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+  if (potVal>2517 && potVal<=2836){
+    secondaryOffset = abs(potVal-2836);
+    horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
     newPlaying = 13;
 
 
   }
 
-  if (potVal>2863 && potVal<=2873){
-    secondaryOffset = abs(potVal-2873);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+  if (potVal>2836 && potVal<=2936){
+    secondaryOffset = abs(potVal-2936);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 14;
     //STATIC CHANNEL
 
   }
 
-    if (potVal>2873 && potVal<=3274){
-    secondaryOffset = abs(potVal-3274);
-    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    if (potVal>2936 && potVal<=3256){
+    secondaryOffset = abs(potVal-3256);
+    horizontalOffset = map(secondaryOffset, 320, 0, gif_width+25, gif_width-25);
     newPlaying = 15;
 
 
   }
     
-    if (potVal>3274 && potVal<=3284){
-    secondaryOffset = abs(potVal-3284);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    if (potVal>3256 && potVal<=3356){
+    secondaryOffset = abs(potVal-3356);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 16;
     //STATIC CHANNEL
 
   }
 
-    if (potVal>3284 && potVal<=3684){
-    secondaryOffset = abs(potVal-3684);
-    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+    if (potVal>3356 && potVal<=3675){
+    secondaryOffset = abs(potVal-3675);
+    horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
     newPlaying = 17;
 
 
   }
 
-    if (potVal>3684 && potVal<=3694){
-    secondaryOffset = abs(potVal-3694);
-    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    if (potVal>3675 && potVal<=3775){
+    secondaryOffset = abs(potVal-3775);
+    horizontalOffset = map(secondaryOffset, 100, 0, gif_width+25, gif_width-25);
     newPlaying = 18;
     //STATIC CHANNEL
 
   }
 
-    if (potVal>3694){
-    secondaryOffset = abs(potVal-3685);
-    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    if (potVal>3775){
+    secondaryOffset = abs(potVal-3775);
+    horizontalOffset = map(secondaryOffset, 320, 0, gif_width+25, gif_width-25);
     newPlaying = 19;
 
 
@@ -476,26 +476,30 @@ if (newPlaying == 1) {
     }
 
   // Vertical roll effect is calculated based on horizontal offset
-  if (horizontalOffset < gif_width-3 || horizontalOffset > gif_width+3)
+  if (horizontalOffset < gif_width-2 || horizontalOffset > gif_width+2)
   {
     // If horizontal offset is far from actual gif width, add a vertical roll
     verticalRoll += horizontalOffset-gif_width;
+    horizontalDistortion = horizontalOffset;
 
     if (verticalOffset + verticalRoll < 0)
     {
       // Keep verticalOffset + verticalRoll within range of screen.
       verticalRoll += 240;
+      horizontalDistortion = horizontalOffset;
     }
     else if (verticalOffset + verticalRoll > 240)
     {
       // Keep verticalOffset + verticalRoll within range of screen.
       verticalRoll -= 240;
+      horizontalDistortion = horizontalOffset;
     }
   }
   else
   {
     // No vertical roll if horizontal offset is close to actual width.
     verticalRoll = 0;
+    horizontalDistortion = 255;
   }
 
   // If it is time for the next animated GIF frame to be shown, advance a
@@ -516,6 +520,6 @@ if (newPlaying == 1) {
 
   // Output the current animation frame with veritical/horizontal offsets.
   clearFrame();
-  copyIntermediateToFrame(horizontalOffset, verticalOffset + verticalRoll);
+  copyIntermediateToFrame(horizontalDistortion, verticalOffset + verticalRoll);
   videoOut.waitForFrame();
 }
