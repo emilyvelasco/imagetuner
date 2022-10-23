@@ -32,7 +32,7 @@ SOFTWARE.
 */
 
 #include <AnimatedGIF.h>
-#include <movingAvg.h>
+
 #include <ESP_8_BIT_GFX.h>
 #include "rear_window.h"
 #include "spiral.h"
@@ -45,14 +45,9 @@ SOFTWARE.
 #include "wireframe.h"
 #include "offair.h"
 #include "static.h"
-
-
-
-int horizontalOffset;
 int secondaryOffset;
-int currentGIFzone;
-int lastGIFzone;
-movingAvg avgPotValue(20);     
+
+
 
 ESP_8_BIT_composite videoOut(true /* = NTSC */);
 AnimatedGIF gif;
@@ -70,6 +65,9 @@ uint8_t* intermediateBuffer;
 // Width and height of decoded GIF
 int gif_height;
 int gif_width;
+
+int wasPlaying;
+int newPlaying;
 
 // When to display the next frame
 long millisNextFrame;
@@ -170,14 +168,13 @@ void setup() {
   Serial.begin(115200);
 
   videoOut.begin();
-  avgPotValue.begin();
 
   gif.begin(LITTLE_ENDIAN_PIXELS);
 
   millisNextFrame = millis();
 
   intermediateBuffer = NULL;
-  if (gif.open((uint8_t *)oswald_gif, oswald_gif_len, GIFDraw))
+  if (gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw))
   {
     // Successfully parsed GIF data, allocate intermediate buffer based on GIF image size
     uint8_t* allocated = NULL;
@@ -185,26 +182,30 @@ void setup() {
 
     gif_width = gif.getCanvasWidth();
     gif_height = gif.getCanvasHeight();
-
+    Serial.print("Successfully opened GIF data ");
+    Serial.print(gif_width);
+    Serial.print(" wide and ");
+    Serial.print(gif_height);
+    Serial.println(" high.");
 
     allocated = new uint8_t[gif_height*gif_width];
     if (NULL==allocated)
     {
-
+      Serial.println("Allocation failed: buffer line array");
       allocateSuccess = false;
     }
     if (allocateSuccess)
     {
       intermediateBuffer = allocated;
       allocated = NULL;
-
+      Serial.println("Successfully allocated intermediate buffer");
     }
   }
   else
   {
     gif_width = 0;
     gif_height = 0;
-
+    Serial.println("Failed to open GIF data");
   }
 
   verticalRoll = 0;
@@ -253,75 +254,229 @@ void copyIntermediateToFrame(int offset_h, int offset_v)
 }
 
 void loop() {
+  
   // Horizontal offset is directly mapped from potentiometer position on pin 13.
-
-
+  int horizontalOffset = map(analogRead(13), 0, 4095, gif_width+25, gif_width-25);
   int potVal = analogRead(13);
-  int AveragepotVal = avgPotValue.reading(potVal);
 
 
-  if (AveragepotVal<=409){
-    secondaryOffset = abs(AveragepotVal-409);
+
+  if (potVal<=400){
+    secondaryOffset = abs(potVal-400);
+    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+    newPlaying = 1;
+
+  }
+
+  if (potVal>400 && potVal<=410){
+    secondaryOffset = abs(potVal-410);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width+25, gif_width-25);
+    newPlaying = 2;
+    //STATIC CHANNEL
+
+  }
+
+  if (potVal>410 && potVal<=811){
+    secondaryOffset = abs(potVal-811);
+    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    newPlaying = 3;
+
+  }
+
+  if (potVal>811 && potVal<=821){
+    secondaryOffset = abs(potVal-821);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width+25, gif_width-25);
+    newPlaying = 4;
+    //STATIC CHANNEL
+
+  }
+
+    if (potVal>821 && potVal<=1221){
+    secondaryOffset = abs(potVal-1221);
     horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
-
-  }
-
-  if (AveragepotVal>409 && AveragepotVal<=819){
-    secondaryOffset = abs(AveragepotVal-819);
-    horizontalOffset = map(secondaryOffset, 410, 0, gif_width+25, gif_width-25);
-
-  }
-
-  if (AveragepotVal>818 && AveragepotVal<=1228){
-    secondaryOffset = abs(AveragepotVal-1228);
-    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
-
-  }
-
-  if (AveragepotVal>1228 && AveragepotVal<=1638){
-    secondaryOffset = abs(AveragepotVal-1639);
-    horizontalOffset = map(secondaryOffset, 410, 0, gif_width+25, gif_width-25);
-
-  }
-
-    if (AveragepotVal>1638 && AveragepotVal<=2047){
-    secondaryOffset = abs(AveragepotVal-2047);
-    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
+    newPlaying = 5;
+    
 
   }
     
-    if (AveragepotVal>2047 && AveragepotVal<=2457){
-    secondaryOffset = abs(AveragepotVal-2457);
-    horizontalOffset = map(secondaryOffset, 410, 0, gif_width+25, gif_width-25);
+    if (potVal>1221 && potVal<=1231){
+    secondaryOffset = abs(potVal-1232);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 6;
+    //STATIC CHANNEL
+  }
+
+    if (potVal>1231 && potVal<=1632){
+    secondaryOffset = abs(potVal-1632);
+    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    newPlaying = 7;
+
 
   }
 
-    if (AveragepotVal>2457 && AveragepotVal<=2866){
-    secondaryOffset = abs(AveragepotVal-2866);
-    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
+    if (potVal>1632 && potVal<=1642){
+    secondaryOffset = abs(potVal-1642);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 8;
+    //STATIC CHANNEL
 
   }
 
-    if (AveragepotVal>2866 && AveragepotVal<=3276){
-    secondaryOffset = abs(AveragepotVal-3276);
-    horizontalOffset = map(secondaryOffset, 410, 0, gif_width+25, gif_width-25);
+    if (potVal>1642 && potVal<=2042){
+    secondaryOffset = abs(potVal-2042);
+    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+    newPlaying = 9;
+
 
   }
 
-    if (AveragepotVal>3276 && AveragepotVal<=3685){
-    secondaryOffset = abs(AveragepotVal-3685);
-    horizontalOffset = map(secondaryOffset, 409, 0, gif_width+25, gif_width-25);
+  if (potVal>2042 && potVal<=2052){
+    secondaryOffset = abs(potVal-2052);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 10;
+    //STATIC CHANNEL
 
   }
 
-  if (AveragepotVal>3685){
-    secondaryOffset =abs(AveragepotVal-4095);
-    horizontalOffset = map(secondaryOffset, 410, 0, gif_width+25, gif_width-25);
+  
+  if (potVal>2052 && potVal<=2453){
+    secondaryOffset = abs(potVal-2453);
+    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    newPlaying = 11;
 
   }
+
+
+  if (potVal>2453 && potVal<=2463){
+    secondaryOffset = abs(potVal-2463);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 12;
+    //STATIC CHANNEL
+
+  }
+
+  if (potVal>2463 && potVal<=2863){
+    secondaryOffset = abs(potVal-2863);
+    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+    newPlaying = 13;
+
+
+  }
+
+  if (potVal>2863 && potVal<=2873){
+    secondaryOffset = abs(potVal-2873);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 14;
+    //STATIC CHANNEL
+
+  }
+
+    if (potVal>2873 && potVal<=3274){
+    secondaryOffset = abs(potVal-3274);
+    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    newPlaying = 15;
+
+
+  }
+    
+    if (potVal>3274 && potVal<=3284){
+    secondaryOffset = abs(potVal-3284);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 16;
+    //STATIC CHANNEL
+
+  }
+
+    if (potVal>3284 && potVal<=3684){
+    secondaryOffset = abs(potVal-3684);
+    horizontalOffset = map(secondaryOffset, 400, 0, gif_width+25, gif_width-25);
+    newPlaying = 17;
+
+
+  }
+
+    if (potVal>3684 && potVal<=3694){
+    secondaryOffset = abs(potVal-3694);
+    horizontalOffset = map(secondaryOffset, 10, 0, gif_width, gif_width);
+    newPlaying = 18;
+    //STATIC CHANNEL
+
+  }
+
+    if (potVal>3694){
+    secondaryOffset = abs(potVal-3685);
+    horizontalOffset = map(secondaryOffset, 401, 0, gif_width+25, gif_width-25);
+    newPlaying = 19;
+
+
+  }
+
+  if (wasPlaying != newPlaying) {
+    gif.close();
+if (newPlaying == 1) {
+          gif.open((uint8_t *)solar_gif, solar_gif_len, GIFDraw);
+
+        } else if (newPlaying == 2) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 3) {
+          gif.open((uint8_t *)oswald_gif, oswald_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 4) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 5) {
+          gif.open((uint8_t *)ape_gif, ape_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 6) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+
+        } else if (newPlaying == 7) {
+          gif.open((uint8_t *)wireframe_gif, wireframe_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 8) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 9) {
+          gif.open((uint8_t *)rear_window_gif, rear_window_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 10) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 11) {
+          gif.open((uint8_t *)offair_gif, offair_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 12) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 13) {
+          gif.open((uint8_t *)mondo_gif, mondo_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 14) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 15) {
+          gif.open((uint8_t *)advertisement_gif, advertisement_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 16) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 17) {
+          gif.open((uint8_t *)spiral_gif, spiral_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 18) {
+          gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
+        
+        } else if (newPlaying == 19) {
+          gif.open((uint8_t *)interview_gif, interview_gif_len, GIFDraw);
+
+        
+        }
+        wasPlaying = newPlaying;
+    }
 
   // Vertical roll effect is calculated based on horizontal offset
-  if (horizontalOffset < gif_width-1 || horizontalOffset > gif_width+1)
+  if (horizontalOffset < gif_width-3 || horizontalOffset > gif_width+3)
   {
     // If horizontal offset is far from actual gif width, add a vertical roll
     verticalRoll += horizontalOffset-gif_width;
@@ -349,91 +504,13 @@ void loop() {
   {
     int millisFrame;
 
-
     if(!gif.playFrame(false, &millisFrame))
     {
-
-    if (AveragepotVal<= 395){
-      gif.open((uint8_t *)solar_gif, solar_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>395 && AveragepotVal<=416) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-    
-    if (AveragepotVal>416 && AveragepotVal<=815) {
-      gif.open((uint8_t *)oswald_gif, oswald_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>815 && AveragepotVal<=826) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>826 && AveragepotVal<=1221) {
-      gif.open((uint8_t *)ape_gif, ape_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>1221 && AveragepotVal<=1237) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-    
-    if (AveragepotVal>1237 && AveragepotVal<=1631) {
-      gif.open((uint8_t *)wireframe_gif, wireframe_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>1631 && AveragepotVal<=1645) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>1645 && AveragepotVal<=2040) {
-      gif.open((uint8_t *)rear_window_gif, rear_window_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>2040 && AveragepotVal<=2054) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>2054 && AveragepotVal<=2451) {
-      gif.open((uint8_t *)offair_gif, offair_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>2451 && AveragepotVal<=2464) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>2464 && AveragepotVal<=2859) {
-      gif.open((uint8_t *)mondo_gif, mondo_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>2859 && AveragepotVal<=2873) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>2873 && AveragepotVal<=3269) {
-      gif.open((uint8_t *)advertisement_gif, advertisement_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>3269 && AveragepotVal<=3283) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>3283 && AveragepotVal<=3672) {
-      gif.open((uint8_t *)spiral_gif, spiral_gif_len, GIFDraw);
-    }
-
-    if (AveragepotVal>3671 && AveragepotVal<=3692) {
-      gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
-    } 
-
-    if (AveragepotVal>3692) {
-      gif.open((uint8_t *)interview_gif, interview_gif_len, GIFDraw);
-    }
       // No more frames, reset the loop to start again.
       gif.reset();
     }
 
     // Track the time for us to show the next frame.
-
     millisNextFrame = millis() + millisFrame;
   }
 
