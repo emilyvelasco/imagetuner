@@ -1,4 +1,10 @@
 /*
+This is an expansion of an example written by Roger Cheng for his ESP_8_Bit
+color composite video library. Whereas the example allowed the user to 
+"tune in" one animated gif, this creates 10 channels, each with its own gif
+and a static band between them.
+
+
 Example for ESP_8_BIT color composite video generator library on ESP32.
 Connect GPIO25 to signal line, usually the center of composite video plug.
 Animated GIF Tuner Effect
@@ -29,6 +35,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
 */
 
 #include <AnimatedGIF.h>
@@ -257,10 +265,13 @@ void loop() {
   
   // Horizontal offset is directly mapped from potentiometer position on pin 13.
   int horizontalOffset = map(analogRead(13), 0, 4095, gif_width+25, gif_width-25);
+  //potVal is used to determining which channel is tuned in
   int potVal = analogRead(13);
 
 
-
+/*the following if statements divide the potentiometer's range into 10 channels
+and 9 static bands intercalated between them. The variable newPlaying holds
+the number of the channel currently tuned in*/
   if (potVal<=319){
     secondaryOffset = abs(potVal-319);
     horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
@@ -410,7 +421,8 @@ void loop() {
 
 
   }
-
+/*if the channel has changed, close the previous gif and open the one for the
+  current channel*/
   if (wasPlaying != newPlaying) {
     gif.close();
 if (newPlaying == 1) {
@@ -497,7 +509,8 @@ if (newPlaying == 1) {
   }
   else
   {
-    // No vertical roll if horizontal offset is close to actual width.
+    /* No vertical roll or horiztonal distortion if horizontal offset
+     is close to actual width. Creates a stable spot within each channel*/
     verticalRoll = 0;
     horizontalDistortion = 255;
   }
