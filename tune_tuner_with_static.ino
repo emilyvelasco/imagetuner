@@ -1,9 +1,9 @@
 /*
-This is an expansion of an example written by Roger Cheng for his ESP_8_Bit
+
+ This is an expansion of an example written by Roger Cheng for his ESP_8_Bit
 color composite video library. Whereas the example allowed the user to 
 "tune in" one animated gif, this creates 10 channels, each with its own gif
 and a static band between them.
-
 
 Example for ESP_8_BIT color composite video generator library on ESP32.
 Connect GPIO25 to signal line, usually the center of composite video plug.
@@ -35,8 +35,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
 */
 
 #include <AnimatedGIF.h>
@@ -45,14 +43,17 @@ SOFTWARE.
 #include "rear_window.h"
 #include "spiral.h"
 #include "advertisement.h"
-#include "solar.h"
-#include "interview.h"
+#include "porn.h"
+
 #include "mondo.h"
 #include "ape.h"
 #include "oswald.h"
+#include "metropolis.h"
 #include "wireframe.h"
-#include "offair.h"
 #include "static.h"
+#include "pet_eye.h"
+
+#include "color_bars.h"
 int secondaryOffset;
 int horizontalDistortion;
 
@@ -190,30 +191,30 @@ void setup() {
 
     gif_width = gif.getCanvasWidth();
     gif_height = gif.getCanvasHeight();
-    Serial.print("Successfully opened GIF data ");
-    Serial.print(gif_width);
-    Serial.print(" wide and ");
-    Serial.print(gif_height);
-    Serial.println(" high.");
+    //Serial.print("Successfully opened GIF data ");
+    //Serial.print(gif_width);
+    //Serial.print(" wide and ");
+    //Serial.print(gif_height);
+    //Serial.println(" high.");
 
     allocated = new uint8_t[gif_height*gif_width];
     if (NULL==allocated)
     {
-      Serial.println("Allocation failed: buffer line array");
+      //Serial.println("Allocation failed: buffer line array");
       allocateSuccess = false;
     }
     if (allocateSuccess)
     {
       intermediateBuffer = allocated;
       allocated = NULL;
-      Serial.println("Successfully allocated intermediate buffer");
+      //Serial.println("Successfully allocated intermediate buffer");
     }
   }
   else
   {
     gif_width = 0;
     gif_height = 0;
-    Serial.println("Failed to open GIF data");
+    //Serial.println("Failed to open GIF data");
   }
 
   verticalRoll = 0;
@@ -265,13 +266,13 @@ void loop() {
   
   // Horizontal offset is directly mapped from potentiometer position on pin 13.
   int horizontalOffset = map(analogRead(13), 0, 4095, gif_width+25, gif_width-25);
-  //potVal is used to determining which channel is tuned in
   int potVal = analogRead(13);
-
+  Serial.println(potVal);
 
 /*the following if statements divide the potentiometer's range into 10 channels
 and 9 static bands intercalated between them. The variable newPlaying holds
 the number of the channel currently tuned in*/
+
   if (potVal<=319){
     secondaryOffset = abs(potVal-319);
     horizontalOffset = map(secondaryOffset, 319, 0, gif_width+25, gif_width-25);
@@ -421,12 +422,14 @@ the number of the channel currently tuned in*/
 
 
   }
-/*if the channel has changed, close the previous gif and open the one for the
+  
+  /*if the channel has changed, close the previous gif and open the one for the
   current channel*/
+
   if (wasPlaying != newPlaying) {
     gif.close();
 if (newPlaying == 1) {
-          gif.open((uint8_t *)solar_gif, solar_gif_len, GIFDraw);
+          gif.open((uint8_t *)scrambled_porn_gif, scrambled_porn_gif_len, GIFDraw);
 
         } else if (newPlaying == 2) {
           gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
@@ -444,7 +447,7 @@ if (newPlaying == 1) {
           gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
 
         } else if (newPlaying == 7) {
-          gif.open((uint8_t *)wireframe_gif, wireframe_gif_len, GIFDraw);
+          gif.open((uint8_t *)pet_eye_gif, pet_eye_gif_len, GIFDraw);
         
         } else if (newPlaying == 8) {
           gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
@@ -456,7 +459,7 @@ if (newPlaying == 1) {
           gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
         
         } else if (newPlaying == 11) {
-          gif.open((uint8_t *)offair_gif, offair_gif_len, GIFDraw);
+          gif.open((uint8_t *)colorbars_gif, colorbars_gif_len, GIFDraw);
         
         } else if (newPlaying == 12) {
           gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
@@ -480,7 +483,7 @@ if (newPlaying == 1) {
           gif.open((uint8_t *)static_gif, static_gif_len, GIFDraw);
         
         } else if (newPlaying == 19) {
-          gif.open((uint8_t *)interview_gif, interview_gif_len, GIFDraw);
+          gif.open((uint8_t *)wireframe_gif, wireframe_gif_len, GIFDraw);
 
         
         }
@@ -488,7 +491,7 @@ if (newPlaying == 1) {
     }
 
   // Vertical roll effect is calculated based on horizontal offset
-  if (horizontalOffset < gif_width-2 || horizontalOffset > gif_width+2)
+  if (horizontalOffset < gif_width-10 || horizontalOffset > gif_width+10)
   {
     // If horizontal offset is far from actual gif width, add a vertical roll
     verticalRoll += horizontalOffset-gif_width;
